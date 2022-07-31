@@ -1,87 +1,92 @@
-import "regenerator-runtime/runtime";
-import { initContract, login, logout, getCounter, counterIncrement,
-         counterDecrement, counterReset } from './near/utils'
-
-function resetUI(){
-  document.querySelector('#show').classList.replace('number','loader');
-  document.querySelector('#show').innerText = '';
-}
-
-// Animations
-document.querySelector('#c').addEventListener('click', () => {
-  document.querySelector('#left').classList.toggle('eye');
-});
-document.querySelector('#b').addEventListener('click', () => {
-  document.querySelector('#right').classList.toggle('eye');
-});
-document.querySelector('#d').addEventListener('click', () => {
-  document.querySelector('.dot').classList.toggle('on');
-});
-
-// Buttons - Interact with the Smart Contract
-document.querySelector('#plus').addEventListener('click', async () => {
-  resetUI();
-  await counterIncrement();
-  await updateUI();
-});
-
-document.querySelector('#minus').addEventListener('click', async  () => {
-  resetUI();
-  await counterDecrement();
-  await updateUI();
-});
-document.querySelector('#a').addEventListener('click', async  () => {
-  resetUI();
-  await counterReset();
-  await updateUI();
-});
-
-// Log in and log out users using NEAR Wallet
-document.querySelector('.sign-in .btn').onclick = login;
-document.querySelector('.sign-out .btn').onclick = logout;
+import 'regenerator-runtime/runtime';
+import { initContract, login, logout, getBros, addBro, removeBro } from './near/utils';
 
 // `nearInitPromise` gets called on page load
 window.nearInitPromise = initContract()
-                    .then(flow)
-                    .catch(console.error)
+  .then(flow)
+  .catch(console.error);
 
-function flow(){
-  if (window.walletConnection.isSignedIn()){
-    signedInFlow()
+function flow() {
+  if (window.walletConnection.isSignedIn()) {
+    signedInFlow();
   }else{
-    signedOutFlow()
+    signedOutFlow();
   }
-  updateUI()
 }
 
 // Display the signed-out-flow container
 function signedOutFlow() {
   document.querySelector('.sign-in').style.display = 'block';
-  document.querySelectorAll('.interact').forEach(button => button.disabled = true)
+  document.querySelector('.sign-in .btn').onclick = login;
+}
+
+function getBroButton(text, color, method) {
+  const button = document.createElement('button');
+  button.className = 'bro btn btn-primary';
+  button.textContent = text;
+  button.style.backgroundColor = color;
+
+  button.onclick = async () => {
+    document.querySelector('.connections').classList.add('busy');
+    try {
+      await method();
+      await fillBros();
+    } finally {
+      document.querySelector('.connections').classList.remove('busy');
+    }
+  };
+
+  return button;
+}
+
+async function fillBros() {
+  const allBros = await getBros();
+  const following = Object.entries(allBros).filter(([bro, status]) => status === 'Following').map(([bro]) => bro);
+  const followedBy = Object.entries(allBros).filter(([bro, status]) => status === 'FollowedBy').map(([bro]) => bro);
+  const bros = Object.entries(allBros).filter(([bro, status]) => status === 'Bros').map(([bro]) => bro);
+
+  document.querySelectorAll('.bro').forEach((bro) => bro.remove());
+
+  document.querySelector('.following').append(
+    ...following.map(
+      (bro) => getBroButton(`${bro} (click to unfollow)`, '', () => removeBro(bro))
+    )
+  );
+
+  document.querySelector('.followedBy').append(
+    ...followedBy.map(
+      (bro) => getBroButton(`${bro} (click to bro)`, '', () => addBro(bro))
+    )
+  );
+
+  document.querySelector('.bros').append(
+    ...bros.map(
+      (bro) => getBroButton(`${bro} 😎 (click to unbro)`, '', () => removeBro(bro))
+    )
+  );
 }
 
 // Displaying the signed in flow container and display counter
-async function signedInFlow() {
+function signedInFlow() {
   document.querySelector('.sign-out').style.display = 'block';
-  document.querySelectorAll('.interact').forEach(button => button.disabled = false)
-}
+  document.querySelector('.sign-out .btn').onclick = logout;
 
-async function updateUI(){
-  let count = await getCounter();
-  
-  document.querySelector('#show').classList.replace('loader','number');
-  document.querySelector('#show').innerText = count === undefined ? 'calculating...' : count;
-  document.querySelector('#left').classList.toggle('eye');
+  document.querySelector('.header').textContent = `Cryptobros (feat. ${window.accountId} 😎)!`;
+  document.querySelector('.connections').style.display = 'flex';
+  document.querySelector('.following button').onclick = async () => {
+    const newBro = window.prompt('Enter name of a bro you want to add 😎:', '')?.trim();
+    if (!newBro) {
+      return;
+    }
 
-  if (count >= 0) {
-    document.querySelector('.mouth').classList.replace('cry','smile');
-  } else {
-    document.querySelector('.mouth').classList.replace('smile','cry');
-  }
+    try {
+      document.querySelector('.connections').classList.add('busy');
+      await addBro(newBro);
+      await fillBros();
+    } finally {
+      document.querySelector('.connections').classList.remove('busy');
+    }
+  };
 
-  if (count > 20 || count < -20) {
-    document.querySelector('.tongue').style.display = 'block';
-  } else {
-    document.querySelector('.tongue').style.display = 'none';
-  }
+  void fillBros();
 }

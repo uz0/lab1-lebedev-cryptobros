@@ -18,9 +18,9 @@ export async function initContract() {
   // Initializing our contract APIs by contract name and configuration
   window.contract = await new Contract(window.walletConnection.account(), nearConfig.contractName, {
     // View methods are read only. They don't modify the state, but usually return some value.
-    viewMethods: ['get_num'],
+    viewMethods: ['get_bros'],
     // Change methods can modify the state. But you don't receive the returned value when called.
-    changeMethods: ['increment', 'decrement', 'reset'],
+    changeMethods: ['add_bro', 'remove_bro'],
   })
 }
 
@@ -38,22 +38,23 @@ export function login() {
   window.walletConnection.requestSignIn(nearConfig.contractName)
 }
 
-export async function getCounter(){
-  let count = await window.contract.get_num({args:{}})
-                                   .catch(err => errorHelper(err))
-  return count;
+export async function getBros() {
+  const bros = await window.contract.get_bros({ account_id: window.accountId })
+    .catch((err) => {
+      errorHelper(err);
+
+      return {};
+    });
+
+  return bros;
 }
 
-export async function counterIncrement(){
-  await window.contract.increment({args:{}})
+export async function addBro(accountId) {
+  await window.contract.add_bro({ args: { account_id: accountId } })
 }
 
-export async function counterDecrement(){
-  await window.contract.decrement({args:{}})
-}
-
-export async function counterReset(){
-  await window.contract.reset({args:{}})
+export async function removeBro(accountId) {
+  await window.contract.remove_bro({ args: { account_id: accountId } })
 }
 
 function errorHelper(err) {
