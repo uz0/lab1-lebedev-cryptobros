@@ -1,22 +1,18 @@
-Counter example in Rust
+Cryptobros
 =================================
 
-[![Open in Gitpod!](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/#https://github.com/near-examples/rust-counter)
-
-<!-- MAGIC COMMENT: DO NOT DELETE! Everything above this line is hidden on NEAR Examples page -->
+[![Open in Gitpod!](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/#https://github.com/uz0/lab1-lebedev-cryptobros)
 
 ## Description
 
-This contract implements simple counter backed by storage on blockchain.
-Contract in `contract/src/lib.rs` provides methods to increment / decrement counter and get it's current value or reset.
-
-Plus and minus buttons increase and decrease value correspondingly. When button L is toggled, a little light turns on, just for fun. RS button is for reset. LE and RE buttons to let the robot wink at you.
+This contract allows people follow and be followed by other people and consider bros with mutual following, backed by storage on blockchain.
+Contract in `contract/src/lib.rs` provides methods to add or remove account as a bro and view current bros.
 
 ## To Run
 Open in the Gitpod link above or clone the repository.
 
 ```
-git clone https://github.com/near-examples/rust-counter
+git clone https://github.com/uz0/lab1-lebedev-cryptobros
 ```
 
 
@@ -73,9 +69,9 @@ near login
 Modify the top of `src/config.js`, changing the `CONTRACT_NAME` to be the NEAR account that was just used to log in.
 
 ```javascript
-…
+...
 const CONTRACT_NAME = 'YOUR_ACCOUNT_NAME_HERE'; /* TODO: fill this in! */
-…
+...
 ```
 
 Start the example!

@@ -1,16 +1,14 @@
-Counter example in Rust - Gitpod version
+Cryptobros - Gitpod version
 ==================================================
 
 This README is specific to Gitpod and this example. For local development, please see [README.md](README.md).
 
 ## Description
 
-In Gitpod, the counter will start automatically. Please look in the terminal for a link to follow.
+In Gitpod, the cryptobros dApp will start automatically. Please look in the terminal for a link to follow.
 
-This contract implements simple counter backed by storage on blockchain.
-Contract in `contract/src/lib.rs` provides methods to increment / decrement counter and get it's current value or reset.
-
-Plus and minus buttons increase and decrease value correspondingly. When button L is toggled, a little light turns on, just for fun. RS button is for reset. LE and RE buttons to let the robot wink at you.
+This contract allows people follow and be followed by other people and consider bros with mutual following, backed by storage on blockchain.
+Contract in `contract/src/lib.rs` provides methods to add or remove account as a bro and view current bros.
 
 ## To Test
 
