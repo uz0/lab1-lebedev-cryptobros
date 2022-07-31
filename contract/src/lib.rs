@@ -85,4 +85,40 @@ impl Cryptobros {
             _ => {}
         }
     }
+
+    pub fn remove_bro(&mut self, account_id: String) {
+        assert!(is_valid_account_id(account_id.as_bytes()), "Specify correct account ID");
+
+        let caller_account_id = env::predecessor_account_id();
+        let target_account_id: AccountId = AccountId::new_unchecked(account_id.clone());
+
+        let mut caller_connections = self.bros.get(&caller_account_id).unwrap();
+        let mut target_connections = self.bros.get(&target_account_id).unwrap();
+
+        match caller_connections.get(&target_account_id) {
+            Some(BrosStatus::Following) => {
+                caller_connections.remove(&target_account_id);
+                if caller_connections.is_empty() {
+                    self.bros.remove(&caller_account_id);
+                } else {
+                    self.bros.insert(&caller_account_id, &caller_connections);
+                }
+
+                target_connections.remove(&caller_account_id);
+                if target_connections.is_empty() {
+                    self.bros.remove(&target_account_id);
+                } else {
+                    self.bros.insert(&target_account_id, &target_connections);
+                }
+            },
+            Some(BrosStatus::Bros) => {
+                caller_connections.insert(&target_account_id, &BrosStatus::FollowedBy);
+                self.bros.insert(&caller_account_id, &caller_connections);
+
+                target_connections.insert(&caller_account_id, &BrosStatus::Following);
+                self.bros.insert(&target_account_id, &target_connections);
+            },
+            _ => {},
+        };
+    }
 }
