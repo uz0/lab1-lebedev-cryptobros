@@ -27,6 +27,7 @@ target/
 
 # lock files
 *.lock
+!yarn.lock
 
 # ignore out dir
 out/
