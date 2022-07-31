@@ -1,0 +1,48 @@
+h1 {
+  margin-top: 1em !important;
+  margin-bottom: 1em !important;
+  text-align: center;
+}
+
+.connections {
+  margin-bottom: 25px;
+  position: relative;
+}
+
+.connections.busy {
+  pointer-events: none;
+}
+
+.connections.busy:after {
+  content: '';
+  position: absolute;
+  background: repeating-linear-gradient(-45deg, dodgerblue 0 10px, transparent 10px 20px);
+  opacity: 0.4;
+  left: -15px;
+  top: -15px;
+  right: -15px;
+  bottom: -15px;
+  border-radius: 15px;
+  cursor: wait;
+  pointer-events: auto;
+}
+
+.connections > div {
+  flex: 1;
+  padding: 5px;
+}
+
+.connections > button {
+  display: block;
+}
+
+button {
+  background-color: #0072CE;
+}
+
+button + button {
+  margin-top: 10px;
+}
+
+
+/*# sourceMappingURL=/global.5ab90e1c.css.map */
